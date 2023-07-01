@@ -48,20 +48,6 @@ public class JwtGeneratorValidator
         }
     }
 
-    public static RSAParameters ReadPublicKey(string publicKeyFilename)
-    {
-        string publicKeyText = File.ReadAllText(publicKeyFilename);
-        PemReader pemReader = new PemReader(new StringReader(publicKeyText));
-        object pemObject = pemReader.ReadObject();
-        
-        if (pemObject is AsymmetricKeyParameter asymmetricKeyParam)
-        {
-            RSAParameters publicKey = DotNetUtilities.ToRSAParameters((RsaKeyParameters)asymmetricKeyParam);
-            return publicKey;
-        }
-        
-        throw new InvalidOperationException("Invalid PEM file. Failed to read the public key.");
-    }
     public bool ValidateJwtToken(string jwtToken,string publicKeyFilename)
     {
         using (RSA rsa = RSA.Create())
@@ -93,5 +79,19 @@ public class JwtGeneratorValidator
             }
         }
         
+    }
+    private static RSAParameters ReadPublicKey(string publicKeyFilename)
+    {
+        string publicKeyText = File.ReadAllText(publicKeyFilename);
+        PemReader pemReader = new PemReader(new StringReader(publicKeyText));
+        object pemObject = pemReader.ReadObject();
+        
+        if (pemObject is AsymmetricKeyParameter asymmetricKeyParam)
+        {
+            RSAParameters publicKey = DotNetUtilities.ToRSAParameters((RsaKeyParameters)asymmetricKeyParam);
+            return publicKey;
+        }
+        
+        throw new InvalidOperationException("Invalid PEM file. Failed to read the public key.");
     }
 }
